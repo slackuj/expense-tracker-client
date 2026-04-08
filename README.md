@@ -1,0 +1,1 @@
+this is a template for react-redux-typescript project.it uses context api for handling system theme.

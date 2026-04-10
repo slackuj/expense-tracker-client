@@ -1,0 +1,131 @@
+#root{
+    margin: 0;
+}
+
+.topbar{
+    background-color: var(--bg-header);
+}
+/*.container{
+    padding: 40px 30px;
+    background-color: white;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    margin: 60px;
+    overflow: auto;
+}*/
+
+.container{
+    display: flex;
+    height: calc(100vh - 70px); /* Adjust height to fill the screen below the topbar */
+    overflow: hidden;
+}
+
+/* Sidebar Rules */
+
+/* Sidebar Container */
+.sidebar {
+    background-color: var(--bg-sidebar, #f4f4f4);
+    color: var(--text-main, #333);
+    width: 250px;
+    height: calc(100vh - 50px); /* Adjust based on your TopBar height */
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0; /* Vertical padding only */
+    flex-shrink: 0;
+    border-right: 1px solid #edebe9;
+}
+
+/* List Reset */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* NavLink Reset */
+.sidebar a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+/* Sidebar List Item */
+.sidebar li {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 14px; /* Standard UI size */
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+    position: relative;
+}
+
+.sidebar li:hover {
+    background-color: var(--hover-color, #ececec);
+}
+
+/* React Router Active State */
+.sidebar a.active li {
+    background-color: #eff6fc; /* Light blue tint for active */
+    font-weight: 600;
+    color: #0078d4; /* Primary blue color */
+}
+
+/* Left Accent Bar for Active Item */
+.sidebar a.active li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    background-color: #0078d4;
+}
+
+/* Icons and Titles */
+.page-icon {
+    margin-right: 15px;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+}
+
+.page-title {
+    flex-grow: 1; /* Pushes the badge to the right */
+}
+
+/* Task Count Badges */
+.task-count {
+    font-size: 12px;
+    color: #605e5c;
+    font-weight: 400;
+}
+
+/* Style for the 'New list' button area if needed */
+.sidebar .new-list-btn {
+    margin-top: auto; /* Push to bottom */
+    padding: 15px 20px;
+    border-top: 1px solid #edebe9;
+    color: #0078d4;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* ---------------------------------------------------------- */
+
+.main-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 20px;
+    background-color: var(--bg-container);
+    color: var(--text-main);
+    transition: all 0.2s ease-in-out;
+}
+
+.task-completed-title, .step-completed-title {
+    text-decoration: line-through;
+}
+
+.task-completed-title.disabled, .step-completed-title.disabled {
+    text-decoration: none;
+}

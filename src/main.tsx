@@ -6,12 +6,15 @@ import App from './App.tsx'
 import {ThemeProvider} from "./context/ThemeContext.tsx";
 import {Provider} from "react-redux";
 import {store} from "./store/store.ts";
+import {BrowserRouter} from "react-router";
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <ThemeProvider>
             <Provider store={store}>
+                <BrowserRouter>
                 <App />
+                </BrowserRouter>
             </Provider>
         </ThemeProvider>
     </StrictMode>

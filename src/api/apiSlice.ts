@@ -3,6 +3,13 @@ import {config} from "../config.ts";
 
 export const apiSlice = createApi({
     reducerPath: "api",
-    baseQuery: fetchBaseQuery({baseUrl: config.apiBaseURI}),
+    baseQuery: fetchBaseQuery({
+        baseUrl: config.apiBaseURI,
+        prepareHeaders: (headers) => {
+            // set headers
+            return headers;
+        },
+        credentials: "include",
+    }),
     endpoints: () => ({}),
 });

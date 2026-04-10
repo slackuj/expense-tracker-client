@@ -1,4 +1,4 @@
-import { ACCESS_TOKEN } from "../constants/storageConstants";
+import {ACCESS_TOKEN} from "../constants/storageConstants";
 import * as storage from "./storageUtil";
 import {jwtDecode, type JwtPayload} from "jwt-decode";
 
@@ -16,9 +16,8 @@ export function clearTokens () {
 
 export function decodeToken(token: string): JwtPayload | null {
     try {
-        const decodedToken = jwtDecode(token);
-        console.log("AccessToken", decodedToken);
-        return decodedToken;
+        //console.log("AccessToken", decodedToken);
+        return jwtDecode(token);
     } catch (error) {
         //console.error("Error decoding token:", error);
         return null;

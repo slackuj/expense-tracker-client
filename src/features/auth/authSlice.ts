@@ -48,6 +48,15 @@ const authSlice = createSlice({
                 }
             }
         );
+        builder.addMatcher(
+            authApiSlice.endpoints.logout.matchFulfilled, (state) => {
+                state.id = undefined;
+                state.accessToken = undefined;
+                state.roles = undefined;
+                state.permissions = undefined;
+                state.isAuthenticated = false;
+            }
+        );
     },
 });
 
@@ -56,6 +65,8 @@ export default authSlice.reducer;
 // selectors
 export const getUserId = (state: RootState) => state.auth.id;
 export const getUserAuth = (state: RootState) => state.auth.isAuthenticated;
+export const getUserRoles = (state: RootState) => state.auth.roles;
+export const getUserPermissions = (state: RootState) => state.auth.permissions;
 
 /***********************************************/
 /*** INJECTING AUTH ENDPOINTS INTO APISLICE  ***/
@@ -84,4 +95,5 @@ const authApiSlice = apiSlice.injectEndpoints({
 
 export const {
     useLoginMutation,
+    useLogoutMutation,
 } = authApiSlice;

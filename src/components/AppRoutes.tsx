@@ -1,14 +1,15 @@
 import { Route, Routes } from "react-router";
-import {Login} from "../features/auth/Login.tsx";
+import {LoginPage} from "../features/auth/LoginPage.tsx";
 import {UserPage} from "../features/users/UserPage.tsx";
+import {RegisterPage} from "../features/auth/RegisterPage.tsx";
 
 export const AppRoutes = () => {
     return (
         <Routes>
             {/*<Route index element={<Home />} />*/}
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<></>} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
             {/*<Route
                 path="/all-users"
                 element={

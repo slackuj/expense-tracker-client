@@ -1,7 +1,7 @@
 import {decodeToken, getAccessToken, setAccessToken} from "../../utils/tokenUtil.ts";
 import {createSlice} from "@reduxjs/toolkit";
 import {apiSlice} from "../../api/apiSlice.ts";
-import type {LoginResponseData, UserLoginRequest} from "../../types/auth.ts";
+import type {LoginResponseData, UserLoginRequest, UserRegisterRequest} from "../../types/auth.ts";
 import {config} from "../../config.ts";
 import type {ApiResponse} from "../../types/response.ts";
 import type {RootState} from "../../store/store.ts";
@@ -90,10 +90,19 @@ const authApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
             }),
         }),
+        // endpoint for registering new user
+        register: builder.mutation<{ success: boolean}, UserRegisterRequest>({
+            query: (userRegisterRequestData) => ({
+                url: config.endpoints.register,
+                method: "POST",
+                body: userRegisterRequestData
+            }),
+        }),
     }),
 });
 
 export const {
     useLoginMutation,
     useLogoutMutation,
+    useRegisterMutation,
 } = authApiSlice;

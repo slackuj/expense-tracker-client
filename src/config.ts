@@ -3,5 +3,6 @@ export const config = {
     endpoints: {
         login: "/auth/login",
         logout: "/auth/logout",
+        register: "/auth/register",
     },
 };

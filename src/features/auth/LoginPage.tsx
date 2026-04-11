@@ -9,7 +9,7 @@ import {toast} from "react-toastify";
 import {UserLoginRequestSchema} from "../../schemas/authSchema";
 import type {UserLoginRequest} from "../../types/auth.ts";
 
-export const Login = () => {
+export const LoginPage = () => {
     const [loginUser, { isLoading }] = useLoginMutation();
     const navigate = useNavigate();
     const isAuthenticated = useAppSelector(getUserAuth);
@@ -29,6 +29,7 @@ export const Login = () => {
             await loginUser(data).unwrap();
         } catch (error) {
             console.error('failed to log in', error);
+            // handle error
             toast("Error logging in", {type: "error"});
         }
     };

@@ -1,4 +1,4 @@
-import {ACCESS_TOKEN} from "../constants/storageConstants";
+import {ACCESS_TOKEN, PERSIST_SESSION} from "../constants/storageConstants";
 import * as storage from "./storageUtil";
 import {jwtDecode, type JwtPayload} from "jwt-decode";
 
@@ -10,8 +10,18 @@ export function setAccessToken(token: string) {
     return storage.set(ACCESS_TOKEN, token);
 }
 
+export function getPersistSession(): boolean {
+    return storage.get(PERSIST_SESSION);
+}
+
+export function setPersistSession(persistSession: boolean) {
+    const maxAge = 30 * 24 * 60 * 60; // maxAge in seconds
+    return storage.set(PERSIST_SESSION, persistSession, maxAge);
+}
+
 export function clearTokens () {
     storage.remove(ACCESS_TOKEN);
+    storage.remove(PERSIST_SESSION);
 }
 
 export function decodeToken(token: string): JwtPayload | null {

@@ -6,9 +6,10 @@ export function get(key: string) {
     return cookies.get(key);
 }
 
-export function set(key: string, value: string | number) {
+export function set(key: string, value: string | number | boolean, maxAge?: number) {
     cookies.set(key, value, {
-        path: "/"
+        path: "/",
+        maxAge,
     })
 }
 

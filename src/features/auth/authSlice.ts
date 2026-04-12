@@ -1,7 +1,13 @@
-import {decodeToken, getAccessToken, setAccessToken} from "../../utils/tokenUtil.ts";
-import {createSlice} from "@reduxjs/toolkit";
+import {
+    decodeToken,
+    getAccessToken,
+    getPersistSession,
+    setAccessToken,
+    setPersistSession
+} from "../../utils/tokenUtil.ts";
+import {createSlice, isAnyOf} from "@reduxjs/toolkit";
 import {apiSlice} from "../../api/apiSlice.ts";
-import type {LoginResponseData, UserLoginRequest, UserRegisterRequest} from "../../types/auth.ts";
+import type {LoginResponseData, RefreshResponseData, UserLoginRequest, UserRegisterRequest} from "../../types/auth.ts";
 import {config} from "../../config.ts";
 import type {ApiResponse} from "../../types/response.ts";
 import type {RootState} from "../../store/store.ts";
@@ -13,9 +19,11 @@ export interface AuthState {
     roles: string[] | undefined;
     permissions: string[] | undefined;
     isAuthenticated: boolean;
+    isSessionPersisted: boolean;
 }
 
 const accessToken = getAccessToken();
+const persistSession = getPersistSession();
 const decodedAccessToken = decodeToken(accessToken) as AccessToken;
 
 const initialState: AuthState = {
@@ -23,7 +31,8 @@ const initialState: AuthState = {
     accessToken,
     roles: decodedAccessToken?.roles,
     permissions: decodedAccessToken?.permissions,
-    isAuthenticated: !!decodedAccessToken
+    isAuthenticated: !!decodedAccessToken,
+    isSessionPersisted: persistSession,
 };
 
 const authSlice = createSlice({
@@ -32,12 +41,14 @@ const authSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder.addMatcher(
-            authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
+            isAnyOf( authApiSlice.endpoints.login.matchFulfilled, authApiSlice.endpoints.refresh.matchFulfilled),
+            (state, action) => {
                 const { accessToken } = action.payload;
                 if ( accessToken ) {
                     state.accessToken = accessToken;
 
                     setAccessToken(accessToken);
+                    setPersistSession(true);
                     // consider performing non-state update tasks outside the reducer ??? such as in onQueryStarted/Updated method ... also can transform response to match the required payload !?
 
                     const decodedAccessToken = decodeToken(accessToken) as AccessToken;
@@ -45,6 +56,7 @@ const authSlice = createSlice({
                     state.roles = decodedAccessToken?.roles;
                     state.permissions = decodedAccessToken?.permissions;
                     state.isAuthenticated = true;
+                    state.isSessionPersisted = true;
                 }
             }
         );
@@ -55,6 +67,7 @@ const authSlice = createSlice({
                 state.roles = undefined;
                 state.permissions = undefined;
                 state.isAuthenticated = false;
+                state.isSessionPersisted = false;
             }
         );
     },
@@ -67,6 +80,8 @@ export const getUserId = (state: RootState) => state.auth.id;
 export const getUserAuth = (state: RootState) => state.auth.isAuthenticated;
 export const getUserRoles = (state: RootState) => state.auth.roles;
 export const getUserPermissions = (state: RootState) => state.auth.permissions;
+export const selectAccessToken = (state: RootState) => state.auth.accessToken;
+export const getSessionPersistence = (state: RootState) => state.auth.isSessionPersisted;
 
 /***********************************************/
 /*** INJECTING AUTH ENDPOINTS INTO APISLICE  ***/
@@ -74,13 +89,12 @@ export const getUserPermissions = (state: RootState) => state.auth.permissions;
 
 const authApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
-        login: builder.mutation< LoginResponseData,UserLoginRequest>({
+        login: builder.mutation< LoginResponseData, UserLoginRequest>({
             query: (userLoginRequestData) => ({
                 url: config.endpoints.login,
                 method: "POST",
                 body: userLoginRequestData
             }),
-            // notice if this is equivalent to response.data.data !? ---> i.e is `return response.data` handled automatically by RTK Query as specified ?
             transformResponse: (response: ApiResponse<LoginResponseData>) => response.data,
         }),
         // endpoint for logout
@@ -98,6 +112,14 @@ const authApiSlice = apiSlice.injectEndpoints({
                 body: userRegisterRequestData
             }),
         }),
+        // endpoint for refreshing user
+        refresh: builder.mutation< RefreshResponseData, void>({
+            query: () => ({
+                url: config.endpoints.refresh,
+                method: "POST",
+            }),
+            transformResponse: (response: ApiResponse<LoginResponseData>) => response.data,
+        }),
     }),
 });
 
@@ -105,4 +127,5 @@ export const {
     useLoginMutation,
     useLogoutMutation,
     useRegisterMutation,
+    useRefreshMutation,
 } = authApiSlice;

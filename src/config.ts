@@ -4,5 +4,6 @@ export const config = {
         login: "/auth/login",
         logout: "/auth/logout",
         register: "/auth/register",
+        refresh: "/auth/refresh",
     },
 };

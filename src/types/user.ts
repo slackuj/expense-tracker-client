@@ -4,13 +4,13 @@ export interface UserSession {
     expiresAt: Date;
 }
 
-export interface AuthenticatedUser {
+export interface User {
     id: string;
     email: string;
     name: string;
-    password: string;
     roles: string[];// array of role names
-    permissions: string[];// array of permission names
+    /* IMPLEMENT PERMISSIONS PROPERTY LATER AFTER MAINTAINING SLICES FOR ROLES AND PERMISSIONS */
+    //permissions: string[];// array of permission names
 }
 
 export interface EditUserRolesRequest {

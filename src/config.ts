@@ -5,5 +5,6 @@ export const config = {
         logout: "/auth/logout",
         register: "/auth/register",
         refresh: "/auth/refresh",
+        users: "/users",
     },
 };

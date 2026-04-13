@@ -23,6 +23,7 @@ export const AppRoutes = () => {
 
             {/*<Route path="/users/:id" element={<ProtectedRoute requiredPermissions={[appPermissions.VIEW_USERS.name]}><UserPage /></ProtectedRoute>} />*/}
             <Route path="/users/:id" element={<UserPage />} />
+            <Route path="/users/me" element={<UserPage />} />
             <Route path="/users" element={<AllUsersPage />} />
 
             <Route path="*" element={<h1>Not Found</h1>} />

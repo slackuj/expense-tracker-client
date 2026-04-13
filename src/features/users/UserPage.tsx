@@ -10,28 +10,26 @@ import {
     TableRow
 } from "@mui/material";
 import {useAppSelector} from "../../hooks/storeHooks.ts";
-import {selectUserById, useGetMeQuery} from "./usersSlice.ts";
-import {useParams} from "react-router";
+import {selectUserById, useGetUserQuery} from "./usersSlice.ts";
+import {useLocation, useParams} from "react-router";
 import {getUserId} from "../auth/authSlice.ts";
 
 export const UserPage = () => {
-    const { id: userId } = useParams();
+    const { id } = useParams();
+    const { pathname } = useLocation();
     const currentUserId = useAppSelector(getUserId);
-    const isSelf = !!(userId && currentUserId && userId === currentUserId);
+    const userId = id ?? pathname === '/users/me' ? currentUserId : undefined;
 
     const cachedUser = useAppSelector((state) => selectUserById(state, userId!));
 
     const {
-        data: self,
+        data: user,
         isLoading
-    } = useGetMeQuery(
-        undefined,
-        { skip: !isSelf || !!cachedUser },
-    );
+    } = useGetUserQuery( userId!, { skip: !!cachedUser });
 
-    const user = isSelf ? (cachedUser || self) : cachedUser;
-    if (isLoading || (!user && isSelf)) return <CircularProgress />;
-    if (!user) return <span>No User Found</span>;
+    const User = cachedUser ?? user;
+    if (isLoading) return <CircularProgress />;
+    if (!User) return <span>No User Found</span>;
 
     let tableHeader = (
         <TableHead>
@@ -46,13 +44,13 @@ export const UserPage = () => {
 
     let tableBody = (
         <TableBody>
-                <TableRow key={user.id}>
+                <TableRow key={User.id}>
                     <TableCell component="th" scope="row">
-                        {user.id}
+                        {User.id}
                     </TableCell>
-                    <TableCell align="right">{user.name}</TableCell>
-                    <TableCell align="right">{user.email}</TableCell>
-                    <TableCell align="right">{user.roles.map(role => role).join(", ")}</TableCell>
+                    <TableCell align="right">{User.name}</TableCell>
+                    <TableCell align="right">{User.email}</TableCell>
+                    <TableCell align="right">{User.roles.map(role => role).join(", ")}</TableCell>
                 </TableRow>
         </TableBody>
     );
@@ -64,7 +62,7 @@ export const UserPage = () => {
                 borderRadius:"2"
             }}>
                 <TableContainer component={Paper}>
-                    <Table sx={{ minWidth: 650 }} aria-label="Table showing all user data">
+                    <Table sx={{ minWidth: 650 }} aria-label="Table showing all User data">
                         {tableHeader}
                         {tableBody}
                     </Table>

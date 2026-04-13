@@ -56,9 +56,8 @@ export const Navbar = () => {
                 { doesUserHaveViewPermission &&
                     <Button color="inherit" onClick={() => navigate("/users")}>View All Users</Button>
                 }
-                <Button color="inherit" onClick={handleLogout}>
-                    Logout
-                </Button>
+                <Button color="inherit" onClick={() => navigate("/users/me")}>Profile</Button>
+                <Button color="inherit" onClick={handleLogout}>Logout</Button>
             </>
         );
     } else {

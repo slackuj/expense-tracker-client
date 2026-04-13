@@ -19,11 +19,32 @@ const usersApiSlice = apiSlice.injectEndpoints({
             query: () => config.endpoints.users,
             transformResponse: (response: ApiResponse<User[]>) => usersAdapter.setAll(initialState, response.data),
         }),
+        // fetch and upsert current user into RTK Query Cache
+        // ONLY CALLED WHEN getUsers hasn't been called ( called on successful login for now )
+        getMe: builder.query<User, void>({
+            query: () => config.endpoints.me,
+            transformResponse: (response: ApiResponse<User>) => response.data,
+
+            // manually push user(me) into 'getUsers' cache entry as we know that RTK Query maintains separate entry for all endpoints in the cache
+            async onQueryStarted(_, lifecycleApi){
+                try {
+                    const { data: me } = await lifecycleApi.queryFulfilled;
+                    lifecycleApi.dispatch(
+                        usersApiSlice.util.updateQueryData('getUsers', undefined, (draft) => {
+                            usersAdapter.upsertOne(draft, me);
+                        })
+                    );
+                } catch(error){
+                    console.error("error fetching /users/me", error);
+                }
+            }
+        }),
     }),
 });
 
 export const {
     useGetUsersQuery,
+    useGetMeQuery,
 } = usersApiSlice;
 
 // Calling `someEndpoint.select(someArg)` generates a new selector that will return

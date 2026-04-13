@@ -54,7 +54,7 @@ export const Navbar = () => {
         boxContent = (
             <>
                 { doesUserHaveViewPermission &&
-                    <Button color="inherit" onClick={() => navigate("/all-users")}>View All Users</Button>
+                    <Button color="inherit" onClick={() => navigate("/users")}>View All Users</Button>
                 }
                 <Button color="inherit" onClick={handleLogout}>
                     Logout

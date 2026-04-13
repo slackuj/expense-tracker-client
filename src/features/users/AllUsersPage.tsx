@@ -10,28 +10,32 @@ import {
     TableRow
 } from "@mui/material";
 import {useAppSelector} from "../../hooks/storeHooks.ts";
-import {selectUserById, useGetMeQuery} from "./usersSlice.ts";
-import {useParams} from "react-router";
-import {getUserId} from "../auth/authSlice.ts";
+import {selectAllUsers, useGetUsersQuery} from "./usersSlice.ts";
+import {useNavigate} from "react-router";
+import {toast} from "react-toastify";
 
-export const UserPage = () => {
-    const { id: userId } = useParams();
-    const currentUserId = useAppSelector(getUserId);
-    const isSelf = !!(userId && currentUserId && userId === currentUserId);
-
-    const cachedUser = useAppSelector((state) => selectUserById(state, userId!));
+export const AllUsersPage = () => {
 
     const {
-        data: self,
-        isLoading
-    } = useGetMeQuery(
-        undefined,
-        { skip: !isSelf || !!cachedUser },
-    );
+        isLoading,
+        isError,
+        error
+    } = useGetUsersQuery();
 
-    const user = isSelf ? (cachedUser || self) : cachedUser;
-    if (isLoading || (!user && isSelf)) return <CircularProgress />;
-    if (!user) return <span>No User Found</span>;
+    const users = useAppSelector(selectAllUsers);
+    const navigate = useNavigate();
+    if (isLoading) return <CircularProgress />;
+    if (isError) {
+        console.error(error);
+        toast.error(`${error}`);
+        return <span>Error loading users.</span>;
+    }
+
+    if (!users) {
+        return (
+            <span>No Users Found</span>
+        );
+    }
 
     let tableHeader = (
         <TableHead>
@@ -46,14 +50,16 @@ export const UserPage = () => {
 
     let tableBody = (
         <TableBody>
+            {Object.values(users).map((user) => (
                 <TableRow key={user.id}>
-                    <TableCell component="th" scope="row">
+                    <TableCell component="th" scope="row" onClick={() => navigate(`/users/${user.id}`)}>
                         {user.id}
                     </TableCell>
                     <TableCell align="right">{user.name}</TableCell>
                     <TableCell align="right">{user.email}</TableCell>
                     <TableCell align="right">{user.roles.map(role => role).join(", ")}</TableCell>
                 </TableRow>
+            ))}
         </TableBody>
     );
 

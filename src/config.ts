@@ -6,5 +6,6 @@ export const config = {
         register: "/auth/register",
         refresh: "/auth/refresh",
         users: "/users",
+        me: "/users/me"
     },
 };

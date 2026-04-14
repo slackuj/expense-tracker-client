@@ -10,25 +10,32 @@ import {
     TableRow
 } from "@mui/material";
 import {useAppSelector} from "../../hooks/storeHooks.ts";
-import {selectUserById, useGetUserQuery} from "./usersSlice.ts";
+import {selectUserById, useGetMeQuery, useGetUserQuery} from "./usersSlice.ts";
 import {useLocation, useParams} from "react-router";
-import {getUserId} from "../auth/authSlice.ts";
+import {getUserAuth, getUserId} from "../auth/authSlice.ts";
 
 export const UserPage = () => {
     const { id } = useParams();
+    const isAuthenticated = useAppSelector(getUserAuth);
     const { pathname } = useLocation();
     const currentUserId = useAppSelector(getUserId);
-    const userId = id ?? pathname === '/users/me' ? currentUserId : undefined;
+    const userId = id ?? (pathname === '/users/me' ? currentUserId : undefined);
 
-    const cachedUser = useAppSelector((state) => selectUserById(state, userId!));
+    const cachedUser = useAppSelector((state) => (userId ? selectUserById(state, userId) : undefined));
 
     const {
         data: user,
         isLoading
-    } = useGetUserQuery( userId!, { skip: !!cachedUser });
+    } = useGetUserQuery( id!, { skip: !!cachedUser || !id });
 
-    const User = cachedUser ?? user;
-    if (isLoading) return <CircularProgress />;
+    const {
+        data: me,
+        isLoading: meLoading,
+    } = useGetMeQuery( undefined, {skip: !(pathname === '/users/me') || !!cachedUser || !isAuthenticated});
+
+    const User = cachedUser ?? user ?? me;
+    if (isLoading || meLoading) return <CircularProgress />;
+    // HANDLE ERRORS LATER
     if (!User) return <span>No User Found</span>;
 
     let tableHeader = (

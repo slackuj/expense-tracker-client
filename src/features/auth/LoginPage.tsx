@@ -37,7 +37,7 @@ export const LoginPage = () => {
     // if user is logged in, navigate to user's home page
     useEffect(() => {
         if (isAuthenticated) {
-            navigate(`/users/${userId}`);
+            navigate('/users/me');
         }
     }, [isAuthenticated, userId, navigate]);
 

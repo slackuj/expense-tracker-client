@@ -2,7 +2,9 @@ export interface LoginResponseData {
     accessToken: string;
 }
 
-export type RefreshResponseData = LoginResponseData;
+export interface RefreshResponseData {
+    accessToken: string;
+}
 
 export interface UserLoginRequest {
     email: string;

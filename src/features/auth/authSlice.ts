@@ -1,11 +1,12 @@
 import {
+    clearTokens,
     decodeToken,
     getAccessToken,
     getPersistSession,
     setAccessToken,
     setPersistSession
 } from "../../utils/tokenUtil.ts";
-import {createSlice, isAnyOf} from "@reduxjs/toolkit";
+import {createSlice, isAnyOf, type PayloadAction} from "@reduxjs/toolkit";
 import {apiSlice} from "../../api/apiSlice.ts";
 import type {LoginResponseData, RefreshResponseData, UserLoginRequest, UserRegisterRequest} from "../../types/auth.ts";
 import {config} from "../../config.ts";
@@ -38,7 +39,19 @@ const initialState: AuthState = {
 const authSlice = createSlice({
     name: "auth",
     initialState,
-    reducers: {},
+    reducers: {
+        tokenReceived: (state, action: PayloadAction<string>) => {
+            state.accessToken = action.payload;
+        },
+        loggedOut:(state) => {
+            state.id = undefined;
+            state.accessToken = undefined;
+            state.roles = undefined;
+            state.permissions = undefined;
+            state.isAuthenticated = false;
+            state.isSessionPersisted = false;
+        },
+    },
     extraReducers: (builder) => {
         builder.addMatcher(
             isAnyOf( authApiSlice.endpoints.login.matchFulfilled, authApiSlice.endpoints.refresh.matchFulfilled),
@@ -75,6 +88,12 @@ const authSlice = createSlice({
 
 export default authSlice.reducer;
 
+// action creators
+export const {
+    tokenReceived,
+    loggedOut,
+} = authSlice.actions;
+
 // selectors
 export const getUserId = (state: RootState) => state.auth.id;
 export const getUserAuth = (state: RootState) => state.auth.isAuthenticated;
@@ -103,6 +122,13 @@ const authApiSlice = apiSlice.injectEndpoints({
                 url: config.endpoints.logout,
                 method: "POST",
             }),
+            async onQueryStarted(_, lifecycleApi){
+                    await lifecycleApi.queryFulfilled;
+                    // (clear)reset RTK Query Cache
+                    lifecycleApi.dispatch(apiSlice.util.resetApiState());
+                    // clear cookies
+                    clearTokens();
+            }
         }),
         // endpoint for registering new user
         register: builder.mutation<{ success: boolean}, UserRegisterRequest>({

@@ -1,13 +1,11 @@
 import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
 import { useNavigate } from "react-router";
-import { useAppDispatch, useAppSelector } from "../hooks/storeHooks";
+import { useAppSelector } from "../hooks/storeHooks";
 import {appPermissions} from "../constants/permissions";
 import {appRoles} from "../constants/roles";
 import {getUserAuth, getUserPermissions, getUserRoles, useLogoutMutation} from "../features/auth/authSlice.ts";
 import {toast} from "react-toastify";
-import {apiSlice} from "../api/apiSlice.ts";
 import type {ReactNode} from "react";
-import {clearTokens} from "../utils/tokenUtil.ts";
 
 export const Navbar = () => {
     const navigate = useNavigate();
@@ -15,7 +13,6 @@ export const Navbar = () => {
     const roles = useAppSelector(getUserRoles);
     const permissions = useAppSelector(getUserPermissions);
     const [logoutUser] = useLogoutMutation();
-    const dispatch = useAppDispatch();
 
     const handleLogout = async () => {
         // implement this globally later
@@ -31,8 +28,6 @@ export const Navbar = () => {
         try{
             await logoutUser().unwrap();
             navigate("/");
-            dispatch(apiSlice.util.resetApiState());
-            clearTokens();
         } catch (error) {
             console.error("logout failed on server", error);
         }

@@ -12,7 +12,6 @@ import {
 import {useAppSelector} from "../../hooks/storeHooks.ts";
 import {selectAllUsers, useGetUsersQuery} from "./usersSlice.ts";
 import {useNavigate} from "react-router";
-import {toast} from "react-toastify";
 
 export const AllUsersPage = () => {
 
@@ -27,7 +26,7 @@ export const AllUsersPage = () => {
     if (isLoading) return <CircularProgress />;
     if (isError) {
         console.error(error);
-        toast.error(`${error}`);
+        //toast.error(`${error}`);
         return <span>Error loading users.</span>;
     }
 

@@ -7,6 +7,7 @@ import {AllUsersPage} from "../features/users/AllUsersPage.tsx";
 import {ProtectedRoute} from "./ProtectedRoute.tsx";
 import {appPermissions} from "../constants/permissions.ts";
 import {AuthenticatedRoute} from "./AuthenticatedRoute.tsx";
+import {ConfirmPage} from "../features/auth/ConfirmPage.tsx";
 
 export const AppRoutes = () => {
     return (
@@ -15,6 +16,7 @@ export const AppRoutes = () => {
 
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/users/confirm" element={<ConfirmPage />} />
             <Route
                 path="/users"
                 element={

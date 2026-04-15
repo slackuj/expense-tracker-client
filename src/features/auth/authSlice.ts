@@ -8,7 +8,13 @@ import {
 } from "../../utils/tokenUtil.ts";
 import {createSlice, isAnyOf, type PayloadAction} from "@reduxjs/toolkit";
 import {apiSlice} from "../../api/apiSlice.ts";
-import type {LoginResponseData, RefreshResponseData, UserLoginRequest, UserRegisterRequest} from "../../types/auth.ts";
+import type {
+    LoginResponseData,
+    RefreshResponseData,
+    RegisterResponseData, ResendConfirmationCodeRequest, UserConfirmationRequest,
+    UserLoginRequest,
+    UserRegisterRequest
+} from "../../types/auth.ts";
 import {config} from "../../config.ts";
 import type {ApiResponse} from "../../types/response.ts";
 import type {RootState} from "../../store/store.ts";
@@ -131,12 +137,13 @@ const authApiSlice = apiSlice.injectEndpoints({
             }
         }),
         // endpoint for registering new user
-        register: builder.mutation<{ success: boolean}, UserRegisterRequest>({
+        register: builder.mutation<RegisterResponseData, UserRegisterRequest>({
             query: (userRegisterRequestData) => ({
                 url: config.endpoints.register,
                 method: "POST",
                 body: userRegisterRequestData
             }),
+            transformResponse: (response: ApiResponse<RegisterResponseData>) => response.data,
         }),
         // endpoint for refreshing user
         refresh: builder.mutation< RefreshResponseData, void>({
@@ -146,6 +153,23 @@ const authApiSlice = apiSlice.injectEndpoints({
             }),
             transformResponse: (response: ApiResponse<LoginResponseData>) => response.data,
         }),
+        // endpoint for new user confirmation
+        confirm: builder.mutation<{success: boolean}, UserConfirmationRequest>({
+            query: (request) => ({
+                url: config.endpoints.confirm,
+                method: "POST",
+                body: request,
+            }),
+        }),
+        // endpoint for requesting resending confirmation code
+        resendCode: builder.mutation<RegisterResponseData, ResendConfirmationCodeRequest>({
+            query: (request) => ({
+                url: config.endpoints.resendCode,
+                method: "POST",
+                body: request,
+            }),
+            transformResponse: (response: ApiResponse<RegisterResponseData>) => response.data,
+        }),
     }),
 });
 
@@ -154,4 +178,6 @@ export const {
     useLogoutMutation,
     useRegisterMutation,
     useRefreshMutation,
+    useConfirmMutation,
+    useResendCodeMutation,
 } = authApiSlice;

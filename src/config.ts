@@ -7,5 +7,7 @@ export const config = {
         refresh: "/auth/refresh",
         users: "/users",
         me: "/users/me",
+        confirm: "/auth/confirm",
+        resendCode: "/auth/resend-code"
     },
 };

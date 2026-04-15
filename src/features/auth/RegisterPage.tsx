@@ -1,5 +1,5 @@
 import {useRegisterMutation} from "./authSlice.ts";
-import {type ReactNode, useEffect} from "react";
+import {type ReactNode} from "react";
 import {useNavigate} from "react-router";
 import {Box, Button, TextField, Typography} from "@mui/material";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -9,7 +9,7 @@ import {UserRegisterRequestSchema} from "../../schemas/authSchema";
 import type {UserRegisterRequest} from "../../types/auth.ts";
 
 export const RegisterPage = () => {
-    const [registerUser, { isLoading, isSuccess }] = useRegisterMutation();
+    const [registerUser, { isLoading}] = useRegisterMutation();
     const navigate = useNavigate();
 
     const {
@@ -24,24 +24,15 @@ export const RegisterPage = () => {
 
     const onSubmit = async (data: UserRegisterRequest) => {
         try{
-            await registerUser(data).unwrap();
+            const response = await registerUser(data).unwrap();
+            const { email, expiresAt } = response;
+            navigate('/users/confirm', { state: { email, expiresAt } });
         } catch (error) {
             console.error('Failed to Register', error);
             // handle error received explicitly
             toast("Error Registering: Please Try Again", {type: "error"});
         }
     };
-
-    // if user is registered in, navigate to user's home page
-    useEffect(() => {
-        if (isSuccess) {
-            navigate(`/login`);
-            toast.success("Register successfully: Please Login",{
-                autoClose: 5000,
-                hideProgressBar: true,
-            });
-        }
-    }, [isSuccess, navigate]);
 
     let boxContent: ReactNode = (
         <>
